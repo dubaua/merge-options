@@ -1,0 +1,16 @@
+{
+  "name": "merge-options",
+  "version": "0.0.1",
+  "description": "helper for merge and validate option flat objects",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "merge",
+    "options",
+    "validation"
+  ],
+  "author": "dubaua@gmail.com",
+  "license": "MIT"
+}

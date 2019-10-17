@@ -1,16 +1,29 @@
 {
   "name": "merge-options",
   "version": "0.0.1",
-  "description": "helper for merge and validate option flat objects",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "description": "Helper for validate user options and merge with default configuration",
+  "source": "mergeOptions.js",
+  "main": "dist/mergeOptions.min.js",
+  "umd:main": "dist/mergeOptions.umd.js",
+  "module": "dist/mergeOptions.mjs",
   "keywords": [
     "merge",
     "options",
     "validation"
   ],
-  "author": "dubaua@gmail.com",
-  "license": "MIT"
+  "repository": "git@github.com:dubaua/merge-options.git",
+  "author": "Vladimir Lysov",
+  "email": "dubaua@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "@babel/preset-env": "^7.6.3",
+    "@babel/register": "^7.6.2",
+    "microbundle": "^0.11.0",
+    "mocha": "^6.2.1"
+  },
+  "scripts": {
+    "test": "mocha --require @babel/register mergeOptions.spec.js",
+    "build": "microbundle --strict"
+  }
 }

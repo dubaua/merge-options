@@ -11,7 +11,10 @@
     "options",
     "validation"
   ],
-  "repository": "git@github.com:dubaua/merge-options.git",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/dubaua/merge-options.git"
+  },
   "author": "Vladimir Lysov",
   "email": "dubaua@gmail.com",
   "license": "MIT",
@@ -25,5 +28,9 @@
   "scripts": {
     "test": "mocha --require @babel/register mergeOptions.spec.js",
     "build": "microbundle --strict"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/dubaua/merge-options/issues"
+  },
+  "homepage": "https://github.com/dubaua/merge-options#readme"  
 }

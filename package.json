@@ -1,11 +1,11 @@
 {
-  "name": "merge-options",
+  "name": "@dubaua/merge-options",
   "version": "0.0.1",
   "description": "Helper for validate user options and merge with default configuration",
-  "source": "mergeOptions.js",
-  "main": "dist/mergeOptions.min.js",
-  "umd:main": "dist/mergeOptions.umd.js",
-  "module": "dist/mergeOptions.mjs",
+  "source": "merge-options.js",
+  "main": "dist/merge-options.min.js",
+  "umd:main": "dist/merge-options.umd.js",
+  "module": "dist/merge-options.mjs",
   "keywords": [
     "merge",
     "options",
@@ -26,11 +26,11 @@
     "mocha": "^6.2.1"
   },
   "scripts": {
-    "test": "mocha --require @babel/register mergeOptions.spec.js",
+    "test": "mocha --require @babel/register merge-options.spec.js",
     "build": "microbundle --strict"
   },
   "bugs": {
     "url": "https://github.com/dubaua/merge-options/issues"
   },
-  "homepage": "https://github.com/dubaua/merge-options#readme"  
+  "homepage": "https://github.com/dubaua/merge-options#readme"
 }

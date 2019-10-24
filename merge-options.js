@@ -3,10 +3,17 @@ function isObject(value) {
 }
 
 /**
+ * @typedef {Object} DefaultOption
+ * @property {*} initial - Initial value for fallback if user option fail validation
+ * @property {string} description - Validator description for human
+ * @property {function} validator - Function for validating user option. Should return boolean value
+ */
+
+/**
  * @typedef {Object} requiredArguments
  * @property {Object} options - user options needs validation before merge
- * @property {Object} defaults - default options object each contains initial value, validator and description
- * @property {Object} target - target object where merge will be applied
+ * @property {Object.<string, DefaultOption>} defaults - default options object each key contains an object with initial value, validator and description
+ * @property {Object} target - target object in which default and user options will be merged
  * @property {String} [warnPreffix] - string before warning message, useful to pass name of tool
  * @property {String} [warnSuffix] - string after warning message, useful to pass link to documentation
  */
@@ -14,7 +21,6 @@ function isObject(value) {
 /**
  * Merges given user options passed validation and defaults to target object
  * Shows warning if given option is invalid
- *
  * @param {...requiredArguments} config - confuguration object
  */
 
@@ -57,6 +63,33 @@ function mergeOptions({ options = {}, defaults, target, warnPreffix = '', warnSu
         throw new TypeError(
           `default option validator should be a function, got ${typeof option.validator} ${option.validator}`
         );
+      } else {
+        // testing validator for primitive data
+        const dummies = [
+          true,
+          false,
+          0,
+          1,
+          Math.PI,
+          -Infinity,
+          NaN,
+          undefined,
+          null,
+          '',
+          'a cabbage',
+          'печенюха',
+          [42, 1e3],
+          { foo: 'bar' },
+        ];
+        for (let i = 0; i < dummies.length; i++) {
+          const dummy = dummies[i];
+          const validationResult = option.validator(dummy);
+          if (typeof validationResult !== 'boolean') {
+            throw new TypeError(
+              `default option validator should return boolean, got ${typeof validationResult} when ${validationResult} passed`
+            );
+          }
+        }
       }
     });
 

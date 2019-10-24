@@ -102,6 +102,21 @@ describe('mergeOptions', function() {
       });
     });
 
+    it("throws an error when one of default options validator returns not boolean", function() {
+      assert.throws(function() {
+        const options = {};
+        const defaults = {
+          options: {
+            initial: false,
+            description: 'x as string',
+            validator: x => String(x),
+          },
+        };
+        const target = {};
+        mergeOptions({ options, defaults, target });
+      });
+    });
+
     it("throws an error when target isn't an object", function() {
       assert.throws(function() {
         const options = {};

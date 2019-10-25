@@ -25,7 +25,7 @@ yarn add @dubaua/merge-options
 or if you want to use package as UMD
 
 ```html
-<script src="https://unpkg.com/@dubaua/merge-options@1.0.0/dist/merge-options.min.umd.js"></script>
+<script src="https://unpkg.com/@dubaua/merge-options@1.0.1/dist/merge-options.min.umd.js"></script>
 ```
 
 # Parameters and Return

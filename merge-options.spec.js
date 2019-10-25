@@ -1,5 +1,5 @@
 import assert from 'assert';
-import mergeOptions from './merge-options.js';
+import mergeOptions from './dist/merge-options.min.js';
 
 describe('mergeOptions', function() {
   describe('throws errors when invalid arguments passed', function() {

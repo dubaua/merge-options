@@ -3,216 +3,224 @@ import mergeOptions from './merge-options.js';
 
 describe('mergeOptions', function() {
   describe('throws errors when invalid arguments passed', function() {
-    it("throws an error when options isn't an object", function() {
-      assert.throws(function() {
-        const defaults = {};
-        const target = {};
-        mergeOptions({ options: null, defaults, target });
-      });
+    it("throws an error when userOptions isn't an object", function() {
+      function errorCase() {
+        const userOptions = null;
+        const defaults = {
+          haveToAdjustScroll: {
+            initial: false,
+            description: 'boolean',
+            validator: x => typeof x === 'boolean',
+          },
+        };
+        const options = mergeOptions({ userOptions, defaults });
+      }
+      assert.throws(errorCase, /Expected userOptions is required not null, not array object, got .*$/);
     });
 
     it("throws an error when defaults isn't an object", function() {
-      assert.throws(function() {
-        const defaults = {};
-        const target = {};
-        mergeOptions({ options, defaults: null, target });
-      });
+      function errorCase() {
+        const userOptions = {
+          haveToAdjustScroll: true,
+        };
+        const defaults = 42;
+        const options = mergeOptions({ userOptions, defaults });
+      }
+      assert.throws(errorCase, /Expected defaults is required not null, not array object, got .*$/);
     });
 
     it("throws an error when one of default options isn't an object", function() {
-      assert.throws(function() {
-        const options = {};
-        const defaults = {
-          options: 32,
+      function errorCase() {
+        const userOptions = {
+          haveToAdjustScroll: true,
         };
-        const target = {};
-        mergeOptions({ options, defaults, target });
-      });
+        const defaults = {
+          haveToAdjustScroll: false,
+        };
+        const options = mergeOptions({ userOptions, defaults });
+      }
+      assert.throws(errorCase, /Expected each default option is an object, got .*$/);
     });
 
     it('throws an error when one of default options lacks of initial value', function() {
-      assert.throws(function() {
-        const options = {};
+      function errorCase() {
+        const userOptions = {
+          haveToAdjustScroll: true,
+        };
         const defaults = {
-          options: {
+          haveToAdjustScroll: {
+            // initial: false,
             description: 'boolean',
             validator: x => typeof x === 'boolean',
           },
         };
-        const target = {};
-        mergeOptions({ options, defaults, target });
-      });
+        const options = mergeOptions({ userOptions, defaults });
+      }
+      assert.throws(errorCase, /Expected .* have initial property/);
     });
 
     it('throws an error when one of default options lacks of description', function() {
-      assert.throws(function() {
-        const options = {};
+      function errorCase() {
+        const userOptions = {
+          haveToAdjustScroll: true,
+        };
         const defaults = {
-          options: {
+          haveToAdjustScroll: {
             initial: false,
+            // description: 'boolean',
             validator: x => typeof x === 'boolean',
           },
         };
-        const target = {};
-        mergeOptions({ options, defaults, target });
-      });
+        const options = mergeOptions({ userOptions, defaults });
+      }
+      assert.throws(errorCase, /Expected .* have description property/);
     });
 
     it("throws an error when one of default options description isn't string", function() {
-      assert.throws(function() {
-        const options = {};
+      function errorCase() {
+        const userOptions = {
+          haveToAdjustScroll: true,
+        };
         const defaults = {
-          options: {
+          haveToAdjustScroll: {
             initial: false,
-            description: null,
+            description: NaN,
             validator: x => typeof x === 'boolean',
           },
         };
-        const target = {};
-        mergeOptions({ options, defaults, target });
-      });
+        const options = mergeOptions({ userOptions, defaults });
+      }
+      assert.throws(errorCase, /Expected .* description is a string, got .*$/);
     });
 
     it('throws an error when one of default options lacks of validator', function() {
-      assert.throws(function() {
-        const options = {};
+      function errorCase() {
+        const userOptions = {
+          haveToAdjustScroll: true,
+        };
         const defaults = {
-          options: {
+          haveToAdjustScroll: {
             initial: false,
             description: 'boolean',
+            // validator: x => typeof x === 'boolean',
           },
         };
-        const target = {};
-        mergeOptions({ options, defaults, target });
-      });
+        const options = mergeOptions({ userOptions, defaults });
+      }
+      assert.throws(errorCase, /Expected .* have validator property/);
     });
 
     it("throws an error when one of default options validator isn't function", function() {
-      assert.throws(function() {
-        const options = {};
+      function errorCase() {
+        const userOptions = {
+          haveToAdjustScroll: true,
+        };
         const defaults = {
-          options: {
+          haveToAdjustScroll: {
             initial: false,
             description: 'boolean',
-            validator: 34,
+            validator: undefined,
           },
         };
-        const target = {};
-        mergeOptions({ options, defaults, target });
-      });
+        const options = mergeOptions({ userOptions, defaults });
+      }
+      assert.throws(errorCase, /Expected .* validator is a function, got .*$/);
     });
 
-    it("throws an error when one of default options validator returns not boolean", function() {
-      assert.throws(function() {
-        const options = {};
+    it('throws an error when one of default options validator returns not boolean', function() {
+      function errorCase() {
+        const userOptions = {
+          haveToAdjustScroll: true,
+        };
         const defaults = {
-          options: {
+          haveToAdjustScroll: {
             initial: false,
-            description: 'x as string',
-            validator: x => String(x),
+            description: 'boolean',
+            validator: x => (typeof x === 'number' || typeof x === 'boolean' ? false : String(x)),
           },
         };
-        const target = {};
-        mergeOptions({ options, defaults, target });
-      });
-    });
-
-    it("throws an error when target isn't an object", function() {
-      assert.throws(function() {
-        const options = {};
-        const defaults = {};
-        mergeOptions({ options, defaults, target: null });
-      });
+        const options = mergeOptions({ userOptions, defaults });
+      }
+      assert.throws(errorCase, /Expected .* validator returning boolean, got .*$/);
     });
 
     it('throws an error when not string passed as warnPreffix', function() {
-      assert.throws(function() {
-        const options = {};
-        const defaults = {};
-        const target = {};
-        const warnPreffix = null;
-        mergeOptions({ options, defaults, target, warnPreffix });
-      });
+      function errorCase() {
+        const userOptions = {
+          haveToAdjustScroll: true,
+        };
+        const defaults = {
+          haveToAdjustScroll: {
+            initial: false,
+            description: 'boolean',
+            validator: x => typeof x === 'boolean',
+          },
+        };
+        const warnPreffix = new Error();
+        const options = mergeOptions({ options, defaults, warnPreffix });
+      }
+      assert.throws(errorCase, /Expected warnPreffix is optional string, got .*$/);
     });
 
     it('throws an error when not string passed as warnSuffix', function() {
-      assert.throws(function() {
-        const options = {};
-        const defaults = {};
-        const target = {};
-        const warnSuffix = 0;
-        mergeOptions({ options, defaults, target, warnSuffix });
-      });
+      function errorCase() {
+        const userOptions = {
+          haveToAdjustScroll: true,
+        };
+        const defaults = {
+          haveToAdjustScroll: {
+            initial: false,
+            description: 'boolean',
+            validator: x => typeof x === 'boolean',
+          },
+        };
+        const warnSuffix = Math.PI;
+        const options = mergeOptions({ options, defaults, warnSuffix });
+      }
+      assert.throws(errorCase, /Expected warnSuffix is optional string, got .*$/);
     });
   });
 
   describe('merges options correctly', function() {
-    it('add passed option if its value passes validation', function() {
+    it('user option overrides default value if it passes validation', function() {
       const defaults = {
-        option: {
+        threshold: {
           initial: 0,
           description: 'a number between 0 and 1',
           validator: x => typeof x === 'number' && 0 <= x && x <= 1,
         },
       };
-      const target = {};
-      const optionValue = 0.5;
-      mergeOptions({ options: { option: optionValue }, defaults, target });
-      assert.strictEqual(target.option, optionValue);
+      const userValue = 0.5;
+      const userOptions = {
+        threshold: userValue,
+      };
+      const options = mergeOptions({ userOptions, defaults });
+      assert.strictEqual(options.threshold, userValue);
     });
 
     it('fallback to default value if passed value fails validation', function() {
       const defaults = {
-        option: {
+        threshold: {
           initial: 0,
           description: 'a number between 0 and 1',
           validator: x => typeof x === 'number' && 0 <= x && x <= 1,
         },
       };
-      const target = {};
-      const optionValue = 3;
-      mergeOptions({ options: { option: optionValue }, defaults, target });
-      assert.strictEqual(target.option, defaults.option.initial);
+      const userValue = 3;
+      const userOptions = {
+        threshold: userValue,
+      };
+      const options = mergeOptions({ userOptions, defaults });
+      assert.strictEqual(options.threshold, defaults.threshold.initial);
     });
 
-    it('options not described in defaults will not be merged into target', function() {
+    it('options not described in defaults will not be merged', function() {
       const defaults = {};
-      const target = {};
-      const options = {
+      const userOptions = {
         undescribedOption: 42,
       };
-      mergeOptions({ options, defaults, target });
-      assert.strictEqual(Object.prototype.hasOwnProperty.call(target, 'undescribedOption'), false);
-    });
-
-    it('replaces existing option if its value passes validation', function() {
-      const defaults = {
-        option: {
-          initial: 0,
-          description: 'a number between 0 and 1',
-          validator: x => typeof x === 'number' && 0 <= x && x <= 1,
-        },
-      };
-      const target = {
-        option: 0.5,
-      };
-      const newValue = 1;
-      mergeOptions({ options: { option: newValue }, defaults, target });
-      assert.strictEqual(target.option, newValue);
-    });
-
-    it("don't affect keys in target not described in defaults", function() {
-      const defaults = {};
-      const oldValue = 0.5;
-      const target = {
-        option: oldValue,
-      };
-      const newValue = 1;
-      const options = {
-        option: newValue,
-      };
-      mergeOptions({ options, defaults, target });
-      assert.strictEqual(target.option, oldValue);
+      const options = mergeOptions({ userOptions, defaults });
+      assert.strictEqual(Object.prototype.hasOwnProperty.call(options, 'undescribedOption'), false);
     });
   });
 });

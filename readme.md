@@ -1,6 +1,6 @@
 # Option Merger and Validator
 
-This helper designed for merging user options into target object with fallback to default value and giving a warning message, describing what was wrong and what value expects. Resulting options always trustworthy because they're passing validation.
+This helper designed for validate user options with fallback to default values and giving a warning message, describing what was wrong and what values are expecting. You describe a validator, description and default value for each option and then pass user options. Resulting options always trustworthy because they're either passing validation or defaults.
 
 # Reasoning
 
@@ -25,18 +25,17 @@ yarn add @dubaua/merge-options
 or if you want to use package as UMD
 
 ```html
-<script src="https://unpkg.com/@dubaua/merge-options@0.0.3/dist/merge-options.min.umd.js"></script>
+<script src="https://unpkg.com/@dubaua/merge-options@1.0.0/dist/merge-options.min.umd.js"></script>
 ```
 
-# Usage
+# Parameters and Return
 
-Function acceps the only parameter — a configuration object. They're described below
+Function acceps the only parameter — a configuration object described below. It returns an object with all keys in default options. User value passing validation overrides corresponding initial value in defaults.
 
 | option      | type                             | description                                                                                           |
 | ----------- | -------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| options     | `Object`                         | Required. User options needs validation before merge                                                  |
 | defaults    | `Object.<string, DefaultOption>` | Required. Default options. An object with objects each type of DefaultOption described in table below |
-| target      | `Object`                         | Required. Target object in which default and user options will be merged                              |
+| userOptions | `Object`                         | Required. User options needs validation before merge                                                  |
 | warnPreffix | `string`                         | String before warning message, useful to pass name of tool                                            |
 | warnSuffix  | `string`                         | String after warning message, useful to pass link to documentation                                    |
 
@@ -50,10 +49,19 @@ Each default option have necessary information to validation and showing warning
 | description | `string`   | Validator description for human                                  |
 | validator   | `function` | Function for validating user option. Should return boolean value |
 
+# Usage
+
+## Import Helper to Your Code
+
 ```js
 import mergeOptions from '@dubaua/merge-options';
+```
 
-// Create an object with default options. Each option should contain initial value, description and validator function.
+## Describe Default Options
+
+Create an object with default options. Each option should have initial value, description and validator function.
+
+```js
 const DEFAULT_LIBRARY_OPTIONS = {
   pagerThreshold: {
     initial: 0.5,
@@ -61,27 +69,35 @@ const DEFAULT_LIBRARY_OPTIONS = {
     validator: x => typeof x === 'number' && 0 <= x && x <= 1,
   },
 };
+```
 
+## Merge User Options with Defaults
+
+```js
 class Library {
   constructor(userOptions) {
-    this.options = {};
-    // use it in your code
-    mergeOptions({
-      options: userOptions,
+    this.options = mergeOptions({
+      userOptions,
       defaults: DEFAULT_LIBRARY_OPTIONS,
-      target: this.options,
-      warnPreffix: 'Library: ',
+      warnPreffix: 'Library',
       warnSuffix: 'Check out documentation https://github.com/dubaua/merge-options',
     });
   }
 }
+```
 
-// pass user options to your code
+Now, everyone can pass options to your library.
+
+```js
+// passing valid options to library
 const libraryInstance = new Library({ pagerThreshold: 1 });
-
-// when options passes validation it will be merged to options
+// options passing validation overrides defaults
 libraryInstance.options.pagerThreshold; // 1
+```
 
+If invalid options passed user will see friendly warnings. And also library will work, but with default options.
+
+```js
 // pass invalid options to your code
 const anotherInstance = new Library({ pagerThreshold: false });
 

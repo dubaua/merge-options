@@ -1,5 +1,5 @@
-import assert from 'assert';
-import mergeOptions from './dist/merge-options.min.js';
+const assert = require('assert');
+const mergeOptions = require('./dist/merge-options.min.js');
 
 describe('mergeOptions', function() {
   describe('throws errors when invalid arguments passed', function() {
@@ -140,7 +140,7 @@ describe('mergeOptions', function() {
           },
         };
         const warnPreffix = new Error();
-        const options = mergeOptions({ options, defaults, warnPreffix });
+        const options = mergeOptions({ userOptions, defaults, warnPreffix });
       }
       assert.throws(errorCase, /Expected warnPreffix is optional string, got .*$/);
     });
@@ -158,7 +158,7 @@ describe('mergeOptions', function() {
           },
         };
         const warnSuffix = Math.PI;
-        const options = mergeOptions({ options, defaults, warnSuffix });
+        const options = mergeOptions({ userOptions, defaults, warnSuffix });
       }
       assert.throws(errorCase, /Expected warnSuffix is optional string, got .*$/);
     });

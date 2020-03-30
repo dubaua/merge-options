@@ -12,7 +12,7 @@ function isObject(value) {
 /**
  * @typedef {Object} requiredArguments
  * @property {Object.<string, DefaultOption>} defaults - default options object each key contains an object with initial value, validator and description
- * @property {Object} userOptions - user options needs validation before merge
+ * @property {Object} [userOptions={}] - user options needs validation before merge
  * @property {String} [warnPreffix] - string before warning message, useful to pass name of tool
  * @property {String} [warnSuffix] - string after warning message, useful to pass link to documentation
  */

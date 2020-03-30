@@ -56,39 +56,12 @@ function mergeOptions({ defaults, userOptions = {}, warnPreffix = '', warnSuffix
       const { validator } = option;
       if (typeof validator !== 'function') {
         throw new TypeError(`Expected ${key} validator is a function, got ${typeof validator} ${validator}`);
-      } else {
-        // testing validator for primitive data
-        const dummies = [
-          true,
-          false,
-          0,
-          1,
-          Math.PI,
-          -Infinity,
-          NaN,
-          undefined,
-          null,
-          '',
-          'a cabbage',
-          'печенюха',
-          [42, 1e3],
-          { foo: 'bar' },
-        ];
-        for (let i = 0; i < dummies.length; i++) {
-          const dummy = dummies[i];
-          const validationResult = option.validator(dummy);
-          if (typeof validationResult !== 'boolean') {
-            throw new TypeError(
-              `Expected ${key} validator returning boolean, got ${typeof validationResult} ${validationResult} on ${dummy} passed`
-            );
-          }
-        }
       }
     });
 
   if (!isObject(userOptions)) {
     throw new TypeError(
-      `Expected userOptions is required not null, not array object, got ${typeof userOptions} ${userOptions}`
+      `Expected userOptions is required not null, not array object, got ${typeof userOptions} ${userOptions}`,
     );
   }
 
@@ -118,7 +91,7 @@ function mergeOptions({ defaults, userOptions = {}, warnPreffix = '', warnSuffix
           warnPreffix,
           `Expected ${optionName} is ${description}, got ${typeof userValue} ${userValue}.`,
           `Fallback to default value ${initial}.`,
-          warnSuffix
+          warnSuffix,
         );
       }
     }

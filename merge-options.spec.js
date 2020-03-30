@@ -127,23 +127,6 @@ describe('mergeOptions', function() {
       assert.throws(errorCase, /Expected .* validator is a function, got .*$/);
     });
 
-    it('throws an error when one of default options validator returns not boolean', function() {
-      function errorCase() {
-        const userOptions = {
-          haveToAdjustScroll: true,
-        };
-        const defaults = {
-          haveToAdjustScroll: {
-            initial: false,
-            description: 'boolean',
-            validator: x => (typeof x === 'number' || typeof x === 'boolean' ? false : String(x)),
-          },
-        };
-        const options = mergeOptions({ userOptions, defaults });
-      }
-      assert.throws(errorCase, /Expected .* validator returning boolean, got .*$/);
-    });
-
     it('throws an error when not string passed as warnPreffix', function() {
       function errorCase() {
         const userOptions = {

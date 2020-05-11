@@ -100,4 +100,4 @@ function mergeOptions({ defaults, userOptions = {}, warnPreffix = '', warnSuffix
   return willReturn;
 }
 
-export default mergeOptions;
+module.exports = mergeOptions;

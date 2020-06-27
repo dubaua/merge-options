@@ -2,7 +2,7 @@
   "name": "@dubaua/merge-options",
   "version": "1.0.1",
   "description": "Helper for validate user options and merge with default configuration",
-  "source": "merge-options.js",
+  "source": "src/index.js",
   "main": "dist/merge-options.min.js",
   "umd:main": "dist/merge-options.umd.js",
   "module": "dist/merge-options.mjs",
@@ -19,12 +19,18 @@
   "email": "dubaua@gmail.com",
   "license": "ISC",
   "devDependencies": {
-    "microbundle": "^0.11.0",
-    "mocha": "^7.1.1"
+    "@babel/core": "^7.10.3",
+    "@babel/preset-env": "^7.10.3",
+    "@babel/register": "^7.10.3",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "eslint": "^7.3.0",
+    "eslint-config-standard": "^14.1.1",
+    "microbundle": "^0.12.2",
+    "mocha": "^8.0.1"
   },
   "scripts": {
-    "test": "mocha merge-options.spec.js",
-    "build": "microbundle --strict"
+    "test": "mocha --require @babel/register src/**/test/*.spec.js",
+    "build": "microbundle --name mergeOptions --alias @=src --strict"
   },
   "bugs": {
     "url": "https://github.com/dubaua/merge-options/issues"

@@ -1,12 +1,16 @@
-# Option Merger and Validator
+# Parameters and Props Validator for Open Source Developers
 
-This helper designed for validate user options with fallback to default values and giving a warning message, describing what was wrong and what values are expecting. You describe a validator, description and default value for each option and then pass user options. Resulting options always trustworthy because they're either passing validation or defaults.
+This tool designed for validating user options against declarative configuration. To show how it is designed I introduce two characters. A developer of a library and a consumer of the library. The first uses merge-options internally and delegate it user options validation. The developer describes the options accepting by the library in declarative way. Each option either required or has default value, have a validator function and description of the validator. The developer can be sure that the library will get valid options passed through merge-options. Also, the developer can be sure the consumer will get verbose exceptions or warnings if they will pass invalid options or will forget to pass required options.
 
 # Reasoning
 
-Everyone hates to get error messages. The worst thing is passing error silently, but error messages not giving you clues are useless as well. Once Internet Explorer pissed me off with its `Unsupported Error`.
+It saves the developer time on validation props and saves the consumer time on debugging.
 
-When I was developing [immerser](https://github.com/dubaua/immerser) I thought about how to throw user-friendly errors. I wanted to save user time on debugging my library. Stack trace gives you exact error position and message should give comprehensive information what is expecting, what was passed. Whats why I made this helper.
+# How it Works
+
+The function iterates over option configuration and looks for user option with same key. If the user option pass validation the function writes user value to a resulting object key. If the option isn't required, so the function writes default value to the resulting object key. If the user option fails validation or the user didn't pass required option the function throws an exception with a verbose message. If all options validation the function returns the resulting object.
+
+Merge-options uses itself internally to validate its options :)
 
 # Installation
 
@@ -25,33 +29,37 @@ yarn add @dubaua/merge-options
 or if you want to use package as UMD
 
 ```html
-<script src="https://unpkg.com/@dubaua/merge-options@1.0.1/dist/merge-options.min.umd.js"></script>
+<script src="https://unpkg.com/@dubaua/merge-options@2.0.0/dist/merge-options.min.umd.js"></script>
 ```
 
 # Parameters and Return
 
-Function acceps the only parameter — a configuration object described below. It returns an object with all keys in default options. User value passing validation overrides corresponding initial value in defaults.
+The function accepts the only parameter — a configuration object described below. It returns an object with all keys in options. User value passing validation overrides corresponding initial value in defaults.
 
-| option      | type                             | description                                                                                           |
-| ----------- | -------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| defaults    | `Object.<string, DefaultOption>` | Required. Default options. An object with objects each type of DefaultOption described in table below |
-| userOptions | `Object`                         | Required. User options needs validation before merge                                                  |
-| warnPreffix | `string`                         | String before warning message, useful to pass name of tool                                            |
-| warnSuffix  | `string`                         | String after warning message, useful to pass link to documentation                                    |
+| option       | type                      | default | description                                                                                                                                                           |
+| ------------ | ------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| optionConfig | `Object.<string, Option>` |         | required. declarative option configuration                                                                                                                            |
+| userOptions  | `Object`                  | `{}`    | user options needs validation before merge                                                                                                                            |
+| preffix      | `string`                  | `''`    | string before an error or warning message                                                                                                                             |
+| suffix       | `string`                  | `''`    | string after an error or warning message                                                                                                                              |
+| strict       | `boolean`                 | `true`  | in strict mode if user value fails validation the function throws an exception. In not strict mode the function shows a warning message and fallback to default value |
 
-## DefaultOption
+## Option
 
-Each default option have necessary information to validation and showing warning message
+Each option configuration have necessary information to validation and composing message
 
-| name        | type       | description                                                      |
-| ----------- | ---------- | ---------------------------------------------------------------- |
-| initial     | `any`      | Initial value for fallback if user option fail validation        |
-| description | `string`   | Validator description for human                                  |
-| validator   | `function` | Function for validating user option. Should return boolean value |
+| name        | type               | description                                                                                                                          |
+| ----------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| required    | `boolean|function` | a flag or function accepts `userOptions`                                                                                             |
+| default     | `any`              | default value for fallback if user option fail validation                                                                            |
+| validator   | `function`         | function for validating user option. Accepts `userValue` as first argument and `userOptions` as second. Should return boolean value. |
+| description | `string`           | human readable validator description. Uses to compose an error message and warning                                                   |
 
 # Usage
 
-## Import Helper to Your Code
+## Import to Your Code
+
+If you're using merge-options as UMD you don't have to import. It accessible as global function mergeOptions.
 
 ```js
 import mergeOptions from '@dubaua/merge-options';
@@ -59,28 +67,25 @@ import mergeOptions from '@dubaua/merge-options';
 
 ## Describe Default Options
 
-Create an object with default options. Each option should have initial value, description and validator function.
+Create an object with option configuration. Each option should have initial value, description and validator function.
 
 ```js
-const DEFAULT_LIBRARY_OPTIONS = {
+const LIBRARY_OPTION_CONFIG = {
   pagerThreshold: {
-    initial: 0.5,
+    default: 0.5,
+    validator: (x) => typeof x === 'number' && 0 <= x && x <= 1,
     description: 'a number between 0 and 1',
-    validator: x => typeof x === 'number' && 0 <= x && x <= 1,
   },
 };
-```
 
-## Merge User Options with Defaults
-
-```js
 class Library {
   constructor(userOptions) {
     this.options = mergeOptions({
+      optionConfig: LIBRARY_OPTION_CONFIG,
       userOptions,
-      defaults: DEFAULT_LIBRARY_OPTIONS,
-      warnPreffix: 'Library',
-      warnSuffix: 'Check out documentation https://github.com/dubaua/merge-options',
+      preffix: '[Library]:',
+      suffix: 'Check out documentation https://github.com/dubaua/merge-options',
+      strict: false,
     });
   }
 }
@@ -95,16 +100,36 @@ const libraryInstance = new Library({ pagerThreshold: 1 });
 libraryInstance.options.pagerThreshold; // 1
 ```
 
-If invalid options passed user will see friendly warnings. And also library will work, but with default options.
+If invalid option passed user will see a warning in not strict mode and exceptions in strict.
 
 ```js
 // pass invalid options to your code
-const anotherInstance = new Library({ pagerThreshold: false });
-
-// when options fails validation default value will be merged
-// and user will see warning with clues what's wrong
-anotherInstance.options.pagerThreshold; // 0.5
-// Library: Expected pagerThreshold is a number between 0 and 1,
-// got boolean false. Fallback to default value 0.
+const anotherInstance = new Library({ pagerThreshold: 1.5 });
+// [Library]: Expected pagerThreshold to be a number between 0 and 1,
+// got number 1.5. Fallback to default value 0.5.
 // Check out documentation https://github.com/dubaua/merge-options
+anotherInstance.options.pagerThreshold; // 0.5
+```
+
+## Validation Based on Another Option
+
+In example below startPosition option validator relies on inputRange value.
+
+```js
+const OPTION_CONFIG = {
+  inputRange: {
+    required: true,
+    validator: (x) => Array.isArray(x) && x.length === 2 && x.every((y) => typeof y === 'number'),
+    description: 'an array of two numbers',
+  },
+  startPosition: {
+    required: (userOptions) => Object.prototype.hasOwnProperty.call(userOptions, 'inputRange'),
+    default: 0,
+    validator: (value, userOptions) =>
+      Object.prototype.hasOwnProperty.call(userOptions, 'inputRange')
+        ? userOptions.inputRange[0] <= value && value <= userOptions.inputRange[1]
+        : true,
+    description: 'an number within inputRange',
+  },
+};
 ```

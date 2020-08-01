@@ -1,9 +1,12 @@
 import hasProperty from '@/utils/hasProperty.js';
-import isObject from '@/utils/isObject.js';
 import _mergeOptions from '@/merge-options.js';
 
 const MESSAGE_PREFFIX = '[mergeOptions]:';
 const MESSAGE_SUFFIX = '\nCheck out documentation https://github.com/dubaua/merge-options#parameters-and-return';
+
+function isObject(value) {
+  return value !== null && typeof value === 'object' && Array.isArray(value) === false;
+}
 
 function throwTypeError(message) {
   throw new TypeError([MESSAGE_PREFFIX, message, MESSAGE_SUFFIX].join(' '));

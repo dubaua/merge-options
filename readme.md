@@ -26,15 +26,9 @@ or yarn
 yarn add @dubaua/merge-options
 ```
 
-or if you want to use package as UMD
-
-```html
-<script src="https://unpkg.com/@dubaua/merge-options@2.0.0/dist/merge-options.min.umd.js"></script>
-```
-
 # Parameters and Return
 
-The function accepts the only parameter — a configuration object described below. It returns an object with all keys in options. User value passing validation overrides corresponding initial value in defaults.
+The function accepts the only parameter — a configuration object described below. It returns an object with all keys described in `optionConfig` and  either user value that passed validaton or initial value in `optionConfig`.
 
 | option       | type                      | default | description                                                                                                                                                           |
 | ------------ | ------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -58,8 +52,6 @@ Each option configuration have necessary information to validation and composing
 # Usage
 
 ## Import to Your Code
-
-If you're using merge-options as UMD you don't have to import. It accessible as global function mergeOptions.
 
 ```js
 import mergeOptions from '@dubaua/merge-options';

@@ -4,6 +4,8 @@
   "description": "Helper for validate user options and merge with default configuration",
   "source": "src/index.js",
   "main": "dist/merge-options.min.js",
+  "umd:main": "dist/merge-options.umd.js",
+  "module": "dist/merge-options.mjs",
   "keywords": [
     "merge",
     "options",
@@ -20,20 +22,18 @@
     "@babel/core": "^7.10.3",
     "@babel/preset-env": "^7.10.3",
     "@babel/register": "^7.10.3",
-    "babel-loader": "^8.1.0",
     "babel-plugin-module-resolver": "^4.0.0",
     "eslint": "^7.3.0",
     "eslint-config-standard": "^14.1.1",
     "husky": "^4.2.5",
-    "mocha": "^8.0.1",
-    "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
+    "microbundle": "^0.12.3",
+    "mocha": "^8.0.1"
   },
   "scripts": {
     "lint": "eslint .",
     "test": "mocha --require @babel/register src/**/test/*.spec.js",
     "check": "yarn lint && yarn test",
-    "build": "webpack"
+    "build": "microbundle --name mergeOptions --alias @=src --strict --output dist"
   },
   "husky": {
     "hooks": {

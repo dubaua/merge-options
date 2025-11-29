@@ -1,42 +1,86 @@
 export type UserOptions = Record<string, unknown>;
+export type RequiredPredicate = (userOptions: Readonly<Partial<UserOptions>>) => boolean;
+export type Validator<T> = (value: T, userOptions: Readonly<Partial<UserOptions>>) => boolean;
 
-export type RequiredPredicate<TUserOptions extends UserOptions> = (
-  userOptions: Readonly<Partial<TUserOptions>>,
-) => boolean;
-
-export type Validator<TValue, TUserOptions extends UserOptions> = (
-  value: unknown,
-  userOptions: Readonly<Partial<TUserOptions>>,
-) => value is TValue;
-
-export type Option<TValue, TUserOptions extends UserOptions = UserOptions> = {
-  required?: boolean | RequiredPredicate<TUserOptions>;
-  default?: TValue;
-  validator: Validator<TValue, TUserOptions>;
+export type OptionWithDefault<T> = {
+  /**
+   * - a flag or function accepts userOptions
+   */
+  required: never;
+  /**
+   * - default value for fallback if user option fail validation
+   */
+  default?: T;
+  /**
+   * - validator for user option. Accepts userValue and userOptions. Should return boolean value.
+   */
+  validator: Validator<T>;
+  /**
+   * - human readable validator description. Uses to compose an error message and warning
+   */
   description: string;
 };
 
-export type OptionConfig<TUserOptions extends UserOptions = UserOptions> = Record<
-  string,
-  Option<unknown, TUserOptions>
->;
+export type RequiredOption<T> = {
+  /**
+   * - a flag or function accepts userOptions
+   */
+  required?: boolean | RequiredPredicate | undefined;
+  /**
+   * - default value for fallback if user option fail validation
+   */
+  default?: never;
+  /**
+   * - validator for user option. Accepts userValue and userOptions. Should return boolean value.
+   */
+  validator: Validator<T>;
+  /**
+   * - human readable validator description. Uses to compose an error message and warning
+   */
+  description: string;
+};
 
-export type MergeOptionsParams<
-  TConfig extends OptionConfig<TUserOptions>,
-  TUserOptions extends UserOptions = UserOptions,
-> = {
+export type Option<T = any> = OptionWithDefault<T> | RequiredOption<T>;
+
+export type OptionConfig = Record<string, Option>;
+
+// завели дженерик по конфигу
+export type MergeOptionsParams<TConfig extends OptionConfig = OptionConfig> = {
+  /**
+   * - declarative option configuration
+   */
   optionConfig: TConfig;
-  userOptions?: Partial<TUserOptions>;
+  /**
+   * - user options needs validation before merge
+   *   ключи только из optionConfig
+   */
+  userOptions?: Partial<Record<keyof TConfig, unknown>>;
+  /**
+   * - string before an error or warning message
+   */
   preffix?: string;
+  /**
+   * - string after an error or warning message
+   */
   suffix?: string;
+  /**
+   * - strict mode flag. Default = true. In strict mode the function throws an error when validation fails, otherwise falls back to default with warning.
+   */
   strict?: boolean;
 };
 
-export type MergeOptionsResult<TConfig extends OptionConfig> = {
-  [K in keyof TConfig]: TConfig[K] extends Option<infer TValue, any> ? TValue : unknown;
-};
+export type MergeOptionsResult<TConfig extends OptionConfig = OptionConfig> = Record<keyof TConfig, unknown>;
 
-export default function mergeOptions<
-  TConfig extends OptionConfig<TUserOptions>,
-  TUserOptions extends UserOptions = UserOptions,
->(params: MergeOptionsParams<TConfig, TUserOptions>): MergeOptionsResult<TConfig>;
+/**
+ * Uses option configuration to iterate over passed user options.
+ * Returns an object with user options passed validation and/or default not required values.
+ * Throws an error for every missing required option.
+ * Fallback to default value to every not required option.
+ * If user value fails validation throws an error in strict mode or otherwise shows a warning message and fallback to default value.
+ * All errors and warnings are verbose and composed based on description of options.
+ * @param {MergeOptionsParams} config - configuration for mergeOptions
+ * @returns {MergeOptionsResult} an object with all keys described in options with userOption values if they pass validation and/or default not required values.
+ */
+declare function mergeOptions<TConfig extends OptionConfig>(
+  config: MergeOptionsParams<TConfig>,
+): MergeOptionsResult<TConfig>;

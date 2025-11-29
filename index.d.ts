@@ -1,31 +1,35 @@
-export type UserOptions = Record<string, unknown>;
-export type RequiredPredicate = (userOptions: Readonly<Partial<UserOptions>>) => boolean;
-export type Validator<T> = (value: T, userOptions: Readonly<Partial<UserOptions>>) => boolean;
+export type RequiredPredicate<TUserOptions extends Record<string, unknown>> = (
+  userOptions: Readonly<Partial<TUserOptions>>,
+) => boolean;
+export type Validator<TValue, TUserOptions extends Record<string, unknown>> = (
+  value: TValue,
+  userOptions: Readonly<Partial<TUserOptions>>,
+) => boolean;
 
-export type OptionWithDefault<T> = {
+export type OptionWithDefault<TValue = any, TUserOptions extends Record<string, unknown> = Record<string, unknown>> = {
   /**
    * - a flag or function accepts userOptions
    */
-  required: never;
+  required?: false;
   /**
    * - default value for fallback if user option fail validation
    */
-  default?: T;
+  default: TValue;
   /**
    * - validator for user option. Accepts userValue and userOptions. Should return boolean value.
    */
-  validator: Validator<T>;
+  validator: Validator<TValue, TUserOptions>;
   /**
    * - human readable validator description. Uses to compose an error message and warning
    */
   description: string;
 };
 
-export type RequiredOption<T> = {
+export type RequiredOption<TValue = any, TUserOptions extends Record<string, unknown> = Record<string, unknown>> = {
   /**
    * - a flag or function accepts userOptions
    */
-  required?: boolean | RequiredPredicate | undefined;
+  required: true | RequiredPredicate<TUserOptions>;
   /**
    * - default value for fallback if user option fail validation
    */
@@ -33,28 +37,31 @@ export type RequiredOption<T> = {
   /**
    * - validator for user option. Accepts userValue and userOptions. Should return boolean value.
    */
-  validator: Validator<T>;
+  validator: Validator<TValue, TUserOptions>;
   /**
    * - human readable validator description. Uses to compose an error message and warning
    */
   description: string;
 };
 
-export type Option<T = any> = OptionWithDefault<T> | RequiredOption<T>;
+export type Option<TValue = any, TUserOptions extends Record<string, unknown> = Record<string, unknown>> =
+  | OptionWithDefault<TValue, TUserOptions>
+  | RequiredOption<TValue, TUserOptions>;
 
-export type OptionConfig = Record<string, Option>;
+export type OptionConfig<TUserOptions extends Record<string, unknown> = Record<string, unknown>> = {
+  [TKey in keyof TUserOptions]: Option<TUserOptions[TKey], TUserOptions>;
+};
 
-// завели дженерик по конфигу
-export type MergeOptionsParams<TConfig extends OptionConfig = OptionConfig> = {
+export type MergeOptionsParams<TUserOptions extends Record<string, unknown> = Record<string, unknown>> = {
   /**
    * - declarative option configuration
    */
-  optionConfig: TConfig;
+  optionConfig: OptionConfig<TUserOptions>;
   /**
    * - user options needs validation before merge
-   *   ключи только из optionConfig
+   *   keys only from optionConfig
    */
-  userOptions?: Partial<Record<keyof TConfig, unknown>>;
+  userOptions?: Partial<TUserOptions>;
   /**
    * - string before an error or warning message
    */
@@ -69,7 +76,9 @@ export type MergeOptionsParams<TConfig extends OptionConfig = OptionConfig> = {
   strict?: boolean;
 };
 
-export type MergeOptionsResult<TConfig extends OptionConfig = OptionConfig> = Record<keyof TConfig, unknown>;
+export type MergeOptionsResult<TUserOptions extends Record<string, unknown> = Record<string, unknown>> = {
+  [TKey in keyof TUserOptions]-?: TUserOptions[TKey];
+};
 
 /**
  * Uses option configuration to iterate over passed user options.
@@ -81,6 +90,6 @@ export type MergeOptionsResult<TConfig extends OptionConfig = OptionConfig> = Re
  * @param {MergeOptionsParams} config - configuration for mergeOptions
  * @returns {MergeOptionsResult} an object with all keys described in options with userOption values if they pass validation and/or default not required values.
  */
-declare function mergeOptions<TConfig extends OptionConfig>(
-  config: MergeOptionsParams<TConfig>,
-): MergeOptionsResult<TConfig>;
+declare function mergeOptions<TUserOptions extends Record<string, unknown>>(
+  config: MergeOptionsParams<TUserOptions>,
+): MergeOptionsResult<TUserOptions>;

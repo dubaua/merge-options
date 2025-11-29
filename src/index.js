@@ -2,11 +2,11 @@ import hasProperty from '@/utils/hasProperty.js';
 import isObject from '@/utils/isObject.js';
 import _mergeOptions from '@/merge-options.js';
 
-const MESSAGE_PREFFIX = '[mergeOptions]:';
+const MESSAGE_PREFIX = '[mergeOptions]:';
 const MESSAGE_SUFFIX = '\nCheck out documentation https://github.com/dubaua/merge-options#parameters-and-return';
 
 function throwTypeError(message) {
-  throw new TypeError([MESSAGE_PREFFIX, message, MESSAGE_SUFFIX].join(' '));
+  throw new TypeError([MESSAGE_PREFIX, message, MESSAGE_SUFFIX].join(' '));
 }
 
 function optionConfigValidator(optionConfig) {
@@ -76,7 +76,7 @@ const OPTION_CONFIG = {
     validator: isObject,
     description: 'an object',
   },
-  preffix: {
+  prefix: {
     required: false,
     default: '',
     validator: (x) => typeof x === 'string',
@@ -114,7 +114,7 @@ const OPTION_CONFIG = {
  * @param {Object} config - required configuration
  * @param {Object.<string, Option>} config.optionConfig - declarative option configuration
  * @param {Object} [config.userOptions={}] - user options needs validation before merge
- * @param {string} [config.preffix=''] - string before an error or warning message
+ * @param {string} [config.prefix=''] - string before an error or warning message
  * @param {string} [config.suffix=''] - string after an error or warning message
  * @param {boolean} [config.strict=true] - strict mode flag. Default = true
  * In strict mode the function throws an error, when user option fails validaton.
@@ -126,7 +126,7 @@ function mergeOptions(config) {
   const validConfig = _mergeOptions({
     optionConfig: OPTION_CONFIG,
     userOptions: config,
-    preffix: MESSAGE_PREFFIX,
+    prefix: MESSAGE_PREFIX,
     suffix: MESSAGE_SUFFIX,
   });
   return _mergeOptions(validConfig);

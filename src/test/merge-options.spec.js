@@ -89,7 +89,7 @@ describe('mergeOptions', () => {
       const userOptions = {
         threshold: '42',
       };
-      const mergedOptions = mergeOptions({ optionConfig, userOptions, preffix: '[Test warning]:', strict: false });
+      const mergedOptions = mergeOptions({ optionConfig, userOptions, prefix: '[Test warning]:', strict: false });
       assert.strictEqual(mergedOptions.threshold, DEFAULT_VALUE);
     });
   });
@@ -148,7 +148,7 @@ describe('mergeOptions', () => {
         const userOptions = {
           threshold: '42',
         };
-        const mergedOptions = mergeOptions({ optionConfig, userOptions, preffix: '[Test warning]:', strict: false });
+        const mergedOptions = mergeOptions({ optionConfig, userOptions, prefix: '[Test warning]:', strict: false });
         assert.strictEqual(mergedOptions.threshold, DEFAULT_VALUE);
       });
     });
@@ -197,8 +197,8 @@ describe('mergeOptions', () => {
     });
   });
 
-  describe('properly adds preffix and suffix', () => {
-    it('preffix exist on error message', () => {
+  describe('properly adds prefix and suffix', () => {
+    it('prefix exist on error message', () => {
       const optionConfig = {
         isExist: {
           required: true,
@@ -210,7 +210,7 @@ describe('mergeOptions', () => {
         isExist: null,
       };
       function errorCase() {
-        mergeOptions({ optionConfig, userOptions, preffix: 'Some string' });
+        mergeOptions({ optionConfig, userOptions, prefix: 'Some string' });
       }
       assert.throws(errorCase, /Some string/);
     });

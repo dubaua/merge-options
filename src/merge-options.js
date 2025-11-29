@@ -18,16 +18,16 @@ import hasProperty from '@/utils/hasProperty.js';
  * @param {Object} config - required configuration
  * @param {Object.<string, Option>} config.optionConfig - declarative option configuration
  * @param {Object} [config.userOptions={}] - user options needs validation before merge
- * @param {string} [config.preffix=''] - string before an error or warning message
+ * @param {string} [config.prefix=''] - string before an error or warning message
  * @param {string} [config.suffix=''] - string after an error or warning message
  * @param {boolean} [config.strict=true] - strict mode flag. Default = true.
- * In strict mode the function throws an error, when user option fails validaton.
+ * In strict mode the function throws an error, when user option fails validation.
  * Otherwise the function shows warning message and fallback to default value.
  * @return {Object} an object with all keys described in options with userOption values if they pass validation and/or default not required values.
  */
 
-function _mergeOptions({ optionConfig, userOptions = {}, preffix = '', suffix = '', strict = true }) {
-  const createMessage = (message) => [preffix, message, suffix].join(' ');
+function _mergeOptions({ optionConfig, userOptions = {}, prefix = '', suffix = '', strict = true }) {
+  const createMessage = (message) => [prefix, message, suffix].join(' ');
 
   const mergedOptions = {};
 

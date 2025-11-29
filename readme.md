@@ -29,7 +29,7 @@ yarn add @dubaua/merge-options
 or if you want to use package as UMD
 
 ```html
-<script src="https://unpkg.com/@dubaua/merge-options@2.0.0/dist/merge-options.min.umd.js"></script>
+<script src="https://unpkg.com/@dubaua/merge-options@3.0.0/dist/merge-options.min.umd.js"></script>
 ```
 
 # Parameters and Return
@@ -40,7 +40,7 @@ The function accepts the only parameter — a configuration object described bel
 | ------------ | ------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | optionConfig | `Object.<string, Option>` |         | required. declarative option configuration                                                                                                                            |
 | userOptions  | `Object`                  | `{}`    | user options needs validation before merge                                                                                                                            |
-| preffix      | `string`                  | `''`    | string before an error or warning message                                                                                                                             |
+| prefix       | `string`                  | `''`    | string before an error or warning message                                                                                                                             |
 | suffix       | `string`                  | `''`    | string after an error or warning message                                                                                                                              |
 | strict       | `boolean`                 | `true`  | in strict mode if user value fails validation the function throws an exception. In not strict mode the function shows a warning message and fallback to default value |
 
@@ -48,12 +48,14 @@ The function accepts the only parameter — a configuration object described bel
 
 Each option configuration have necessary information to validation and composing message
 
-| name        | type               | description                                                                                                                          |
-| ----------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| required    | `boolean|function` | a flag or function accepts `userOptions`                                                                                             |
-| default     | `any`              | default value for fallback if user option fail validation                                                                            |
-| validator   | `function`         | function for validating user option. Accepts `userValue` as first argument and `userOptions` as second. Should return boolean value. |
-| description | `string`           | human readable validator description. Uses to compose an error message and warning                                                   |
+| name        | type                        | description                                                                                                                          |
+| ----------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| required    | `true` or `(userOptions)=>` | optional. mark option as required; predicate accepts `userOptions`                                                                   |
+| default     | `any`                       | required for non-required options; fallback value when validation fails or user omitted the option                                   |
+| validator   | `function`                  | function for validating user option. Accepts `userValue` as first argument and `userOptions` as second. Should return boolean value. |
+| description | `string`                    | human readable validator description. Uses to compose an error message and warning                                                   |
+
+Rules: either provide `required` (true or predicate) without `default`, or omit/`required: false` and provide `default`.
 
 # Usage
 
@@ -83,7 +85,7 @@ class Library {
     this.options = mergeOptions({
       optionConfig: LIBRARY_OPTION_CONFIG,
       userOptions,
-      preffix: '[Library]:',
+      prefix: '[Library]:',
       suffix: 'Check out documentation https://github.com/dubaua/merge-options',
       strict: false,
     });

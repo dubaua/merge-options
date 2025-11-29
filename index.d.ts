@@ -65,7 +65,7 @@ export type MergeOptionsParams<TUserOptions extends Record<string, unknown> = Re
   /**
    * - string before an error or warning message
    */
-  preffix?: string;
+  prefix?: string;
   /**
    * - string after an error or warning message
    */

@@ -26,7 +26,7 @@ describe('test external function validates its own configuration', () => {
       assert.throws(errorCase, /Expected userOptions to be an object, got/);
     });
 
-    it(`throws an error when preffix isn't a string`, () => {
+    it(`throws an error when prefix isn't a string`, () => {
       function errorCase() {
         mergeOptions({
           optionConfig: {
@@ -37,10 +37,10 @@ describe('test external function validates its own configuration', () => {
             },
           },
           userOptions: {},
-          preffix: !true,
+          prefix: !true,
         });
       }
-      assert.throws(errorCase, /Expected preffix to be a string, got/);
+      assert.throws(errorCase, /Expected prefix to be a string, got/);
     });
 
     it(`throws an error when suffix isn't a string`, () => {

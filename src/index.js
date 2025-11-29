@@ -98,8 +98,8 @@ const OPTION_CONFIG = {
 
 /**
  * @typedef {Object} Option
- * @property {boolean|function} required - a flag or function accepts userOptions
- * @property {*} default - default value for fallback if user option fail validation
+ * @property {boolean|function} [required] - a flag or function accepts userOptions
+ * @property {*} [default] - default value for fallback if user option fail validation
  * @property {function} validator - function for validating user option. Accepts userValue as first argument and userOptions as second. Should return boolean value
  * @property {string} description - human readable validator description. Uses to compose an error message and warning
  */

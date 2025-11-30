@@ -1,6 +1,6 @@
 {
   "name": "@dubaua/merge-options",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Helper for validate user options and merge with default configuration",
   "source": "src/index.js",
   "main": "dist/merge-options.min.js",

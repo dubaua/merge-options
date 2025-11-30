@@ -93,3 +93,5 @@ export type MergeOptionsResult<TUserOptions extends Record<string, unknown> = Re
 declare function mergeOptions<TUserOptions extends Record<string, unknown>>(
   config: MergeOptionsParams<TUserOptions>,
 ): MergeOptionsResult<TUserOptions>;
+
+export default mergeOptions;
